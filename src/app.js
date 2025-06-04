@@ -39,17 +39,19 @@ const defaultHTML  = `
       display: flex;
       justify-content: center;
       align-items: center;
-      background-image: url("../public/binary.gif");
+      background-image: url("https://res.cloudinary.com/dwvr054ck/image/upload/v1749037268/binary_eif192.gif");
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
+      background: gray;
+
     }
 
     h1{
       color: transparent;
       font-size: 70px;
       text-align: center;
-       background-image: url("../public/text_gif.gif");
+       background-image: url("https://res.cloudinary.com/dwvr054ck/image/upload/v1749037266/text_gif_ztrqhf.gif");
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
