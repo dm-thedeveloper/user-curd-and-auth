@@ -15,6 +15,7 @@ app.use(cors(corsOptions));
 
 // Default Routes
 const defaultHTML  = `
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -38,7 +39,7 @@ const defaultHTML  = `
       display: flex;
       justify-content: center;
       align-items: center;
-      background-image: url("./binary.gif");
+      background-image: url("../public/binary.gif");
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
@@ -48,7 +49,7 @@ const defaultHTML  = `
       color: transparent;
       font-size: 70px;
       text-align: center;
-       background-image: url("./text\ gif.gif");
+       background-image: url("../public/text_gif.gif");
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
