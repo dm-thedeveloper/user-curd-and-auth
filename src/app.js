@@ -15,7 +15,6 @@ app.use(cors(corsOptions));
 
 // Default Routes
 const defaultHTML  = `
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -65,7 +64,6 @@ const defaultHTML  = `
     <h1> User CURD & <br> Auth Secrver </h1>
   </body>
 </html>
-
 `
 app.get("/", (req, res, _) => {
   res.send(defaultHTML)

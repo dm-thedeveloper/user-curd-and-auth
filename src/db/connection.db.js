@@ -9,6 +9,7 @@ const DBConnection = async () => {
     const db = await mongoose.connect(`${process.env.DB_URI}/${dbName}`);
     console.log(chalk.bgGreen("** DataBase Connected SuccessFully"));
     console.log("Host : " ,db.connection.host);
+    console.log("Name : " ,db.connection.name);
     
     
 
