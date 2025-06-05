@@ -5,7 +5,7 @@ const generateRandomNumber = (max = 100) => {
 };
 
 const userSchema = new mongoose.Schema(
-    // Basic Info
+  // Basic Info
   {
     first_name: {
       type: String,
@@ -58,7 +58,7 @@ const userSchema = new mongoose.Schema(
     },
 
     // Account Settings
-    
+
     role: {
       type: String,
       enum: ["user", "admin"],

@@ -71,6 +71,9 @@ app.get("/", (req, res, _) => {
 
 // Route Importing
 
+import useRouter from "./routes/user.routes.js";
+
 // Route Declaration
 
+app.use("/user" ,useRouter)
 export default app;
