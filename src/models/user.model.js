@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import bcrypt from "bcrypt";
 
 const generateRandomNumber = (max = 100) => {
   return Math.floor(Math.random() * max);
@@ -27,16 +28,16 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       unique: true,
     },
-    emial: {
+    email: {
       type: String,
-      unique: true,
+      // unique: true,
       lowercase: true,
       trim: true,
-      required: [true, "Password is Required"],
+      // required: [true, "Password is Required"],
     },
     password: {
       type: String,
-      required: [true, "Password is Required"],
+      // required: [true, "Password is Required"],
       trim: true,
     },
     phone: {
@@ -66,6 +67,7 @@ const userSchema = new mongoose.Schema(
     },
     settings: {
       notifications: {
+
         type: Boolean,
         default: false,
       },
@@ -78,10 +80,12 @@ const userSchema = new mongoose.Schema(
 
     //RelationShips
     posts: {
+
       type: Number,
       default: generateRandomNumber(),
     },
     followers: {
+
       type: Number,
       default: generateRandomNumber(300000),
     },
@@ -99,7 +103,15 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
 const User = mongoose.model("User", userSchema);
+
+export default User;
 
 // Basic Info
 

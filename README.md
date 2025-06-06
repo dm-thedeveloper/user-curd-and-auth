@@ -25,5 +25,12 @@
 # 12. Define Routes in app.js
  - [useRouter](https://github.com/dm-thedeveloper/user-curd-and-auth/blob/82df808e741e88fdcbd614c93c41afdc591118d1/src/app.js#L74C1-L78C28)
 
+# 13. Create Middleware 
+   - [multer.middleware.js]()
+   - [inject in the userRoute]()
 
-# 13.tghjnkml,
+# 14. Send Form Data from the postman 
+> ## Post:  /user/register  ✅✅
+# 15. Create a Register Controller
+
+  

@@ -1,10 +1,117 @@
+import User from "../models/user.model.js";
+import APIError from "../utils/apiError.utils.js";
 import APIResponse from "../utils/apiResponse.utils.js";
 import asychandler from "../utils/asyncHandler.js";
+import uploadOnCloudinary from "../utils/uploadFileOnCloudinary.utils.js";
 
-const Register = asychandler((req, res) => {
-    console.log(req.url);
-    
-  res.status(200).json(new APIResponse("User Will Be Registred !!", {}, 200));
+const Register = asychandler(async (req, res) => {
+  // Accrss Data from the res
+  // Validation for the Required Fields
+  // Check user already Registered username & email
+  // access the files
+  // upload image on the cloudinary - access url
+  // create user object
+  // remove sensitive and unnesecery fields
+  // Check for user Creattion
+  // retun res
+
+  console.log(req.url);
+
+  const {
+    first_name,
+    last_name,
+    user_name,
+    email,
+    password,
+    phone,
+    bio,
+    gender,
+  } = req.body;
+
+  // console.log(    first_name,    last_name,    user_name,    email,    password,    phone,    bio,    gender  );
+
+  const requiredFields = ["user_name", "email", "password"];
+
+  for (const field of requiredFields) {
+    if (!req.body[field]) {
+      res.status(301).json(new APIResponse(`${field} is Required :)`, {}, 300));
+      throw new APIError(`${field} is Required :)`, 300);
+    }
+  }
+
+  const findUser = await User.findOne({
+    $or: [{ user_name }, { email }],
+  });
+  // console.log("FindUser", findUser);
+
+  if (findUser) {
+    res
+      .status(300)
+      .json(
+        new APIResponse(
+          "User Already Registered with the email or username",
+          {},
+          300
+        )
+      );
+    throw new APIError(
+      "User Already Registered with the email or username",
+      300
+    );
+  }
+  // console.log(req.files);
+
+  let avatarPath;
+
+  if (!req.files.avatar) {
+    res
+      .status(301)
+      .json(new APIResponse(`Avatar is Required is Required :)`, {}, 300));
+    throw new APIError(`Avatar is Required :)`, 300);
+  } else avatarPath = req.files.avatar[0].path;
+
+  let coverImage = req.files?.coverImage ? req.files.coverImage[0].path : "";
+
+  const avatarURL = await uploadOnCloudinary(avatarPath);
+  const coverImageURL = await uploadOnCloudinary(coverImage);
+
+  // console.log(avatarURL);
+  // console.log(coverImageURL);
+
+  const createdUser = await User.create({
+    first_name,
+    last_name,
+    user_name,
+    email,
+    password,
+    phone,
+    bio,
+    gender,
+    avatar: avatarURL,
+    coverImage: coverImageURL,
+  });
+
+  const userResponse = await User.findById(createdUser?._id).select(
+    "-password "
+  );
+  console.log(userResponse);
+
+  if (!userResponse) {
+    res
+      .status(500)
+      .json(new APIResponse("Error When User Created !! ", {}, 500));
+    throw new APIError("Error When User Created !!", 500);
+  }
+
+  res
+    .status(200)
+    .json(
+      new APIResponse(
+        "User Will Be Registred !!",
+        userResponse ? userResponse : {},
+        200
+      )
+    );
 });
 
 export { Register };
