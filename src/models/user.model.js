@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema(
     // Profile
     avatar: {
       type: String,
-      required: true,
+      // required: true,
     },
     coverImage: String,
     bio: String,
@@ -108,6 +108,13 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
+
+// create a method which Compampare the hased and Plain password
+
+userSchema.methods.isPasswordCorrect  = async function (passsword)  {
+  return await bcrypt.compare(passsword , this.passsword)
+}
+
 
 const User = mongoose.model("User", userSchema);
 

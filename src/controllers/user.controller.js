@@ -3,6 +3,7 @@ import APIError from "../utils/apiError.utils.js";
 import APIResponse from "../utils/apiResponse.utils.js";
 import asychandler from "../utils/asyncHandler.js";
 import uploadOnCloudinary from "../utils/uploadFileOnCloudinary.utils.js";
+import bcrypt from "bcrypt";
 
 const Register = asychandler(async (req, res) => {
   // Accrss Data from the res
@@ -71,6 +72,7 @@ const Register = asychandler(async (req, res) => {
   } else avatarPath = req.files.avatar[0].path;
 
   let coverImage = req.files?.coverImage ? req.files.coverImage[0].path : "";
+  console.log(avatarPath);
 
   const avatarURL = await uploadOnCloudinary(avatarPath);
   const coverImageURL = await uploadOnCloudinary(coverImage);
@@ -114,4 +116,46 @@ const Register = asychandler(async (req, res) => {
     );
 });
 
-export { Register };
+const login = asychandler(async (req, res) => {
+  console.log(req.url);
+
+  // Get Data
+  // Check for required Fields
+  // findUser
+  // compare passsword palin and hashed
+
+  //  generate access and And Refresh Toke also Save Acces toke in DB
+  // send cookies
+
+  // console.log(req.body);
+  const { user_name, email, password } = req.body;
+  // console.log(user_name , email , password);
+
+  const findUser = await User.findOne({
+    $and: [{ user_name }, { email }],
+  });
+
+  // console.log(findUser);
+
+  if (!findUser) {
+    res.status(300).json(new APIResponse("User Not Registered .", {}, 300));
+    throw new APIError("User Not Registred", 300);
+  }
+
+  // const isPasswordValid = await User.isPasswordCorrect(password)
+
+  const isPasswordValid = await bcrypt.compare(password, findUser?.password);
+  // console.log(isPasswordValid);
+
+  if (!isPasswordValid) {
+    res.status(300).json(new APIResponse("Incorrect Password", {}, 300));
+    throw new APIError("Incorrect Password", 300);
+  }
+
+
+  res
+    .status(200)
+    .json(new APIResponse("User Loggend In Success Fully !!!", {}, 200));
+});
+
+export { Register, login };
