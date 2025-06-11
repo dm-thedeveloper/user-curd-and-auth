@@ -5,6 +5,28 @@ import asychandler from "../utils/asyncHandler.js";
 import uploadOnCloudinary from "../utils/uploadFileOnCloudinary.utils.js";
 import bcrypt from "bcrypt";
 
+const generateTokens = async (id) => {
+  try {
+    // Find User
+    // Apply method - access token
+    // save token in DB
+    // return token
+
+    const findUser = await User.findById(id);
+    const accessToken = await findUser.generateAccessToken();
+
+    const refreshToken = await findUser.generateRefreshToken();
+
+    findUser.refreshToken = refreshToken;
+    await findUser.save();
+    console.log(findUser);
+
+    return { refreshToken, accessToken };
+  } catch (error) {
+    console.log("Token Not Generated : ", error);
+  }
+};
+
 const Register = asychandler(async (req, res) => {
   // Accrss Data from the res
   // Validation for the Required Fields
@@ -152,9 +174,18 @@ const login = asychandler(async (req, res) => {
     throw new APIError("Incorrect Password", 300);
   }
 
+  const { accessToken, refreshToken } = await generateTokens(findUser?._id);
+  console.log("Access Token", accessToken);
 
+  const cookiesOptions =  {
+    httpOnly : true , 
+    secure : true
+  }
+  
   res
     .status(200)
+    res.cookie("accessToken", accessToken , cookiesOptions )
+    res.cookie("refreshToken", refreshToken  ,cookiesOptions)
     .json(new APIResponse("User Loggend In Success Fully !!!", {}, 200));
 });
 

@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 const generateRandomNumber = (max = 100) => {
@@ -67,7 +68,6 @@ const userSchema = new mongoose.Schema(
     },
     settings: {
       notifications: {
-
         type: Boolean,
         default: false,
       },
@@ -80,12 +80,10 @@ const userSchema = new mongoose.Schema(
 
     //RelationShips
     posts: {
-
       type: Number,
       default: generateRandomNumber(),
     },
     followers: {
-
       type: Number,
       default: generateRandomNumber(300000),
     },
@@ -111,9 +109,33 @@ userSchema.pre("save", async function (next) {
 
 // create a method which Compampare the hased and Plain password
 
-userSchema.methods.isPasswordCorrect  = async function (passsword)  {
-  return await bcrypt.compare(passsword , this.passsword)
-}
+userSchema.methods.isPasswordCorrect = async function (passsword) {
+  return await bcrypt.compare(passsword, this.passsword);
+};
+
+userSchema.methods.generateAccessToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+      email: this.email,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+  );
+};
+
+userSchema.methods.generateRefreshToken = function () {
+
+  return jwt.sign(
+    {
+      _id: this._id,
+      // email: this.email,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+  );
+};
+
 
 
 const User = mongoose.model("User", userSchema);
