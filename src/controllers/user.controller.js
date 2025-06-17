@@ -18,8 +18,7 @@ const generateTokens = async (id) => {
     const refreshToken = await findUser.generateRefreshToken();
 
     findUser.refreshToken = refreshToken;
-    await findUser.save();
-    console.log(findUser);
+    await findUser.save({ validateBeforeSave: false });
 
     return { refreshToken, accessToken };
   } catch (error) {
@@ -175,18 +174,39 @@ const login = asychandler(async (req, res) => {
   }
 
   const { accessToken, refreshToken } = await generateTokens(findUser?._id);
-  console.log("Access Token", accessToken);
+  // console.log("Access Token", accessToken);
+  const loggedInUser = await User.findById(findUser?._id).select(
+    "-password -refreshToken"
+  );
 
-  const cookiesOptions =  {
-    httpOnly : true , 
-    secure : true
-  }
-  
+  const cookiesOptions = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  res.status(200);
+  res.cookie("accessToken", accessToken, cookiesOptions);
   res
-    .status(200)
-    res.cookie("accessToken", accessToken , cookiesOptions )
-    res.cookie("refreshToken", refreshToken  ,cookiesOptions)
-    .json(new APIResponse("User Loggend In Success Fully !!!", {}, 200));
+    .cookie("refreshToken", refreshToken, cookiesOptions)
+    .json(
+      new APIResponse("User Loggend In Success Fully !!!", loggedInUser, 200)
+    );
 });
 
-export { Register, login };
+const logOut = asychandler(async (req, res) => {
+  console.log(req.url);
+  console.log(req.user);
+  await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $unset: { refreshToken: 1 },
+    },
+    {
+      new: true,
+    }
+  );
+
+  res.status(200).json(new APIResponse("User Log Out Success Fully", {}, 200));
+});
+
+export { Register, login, logOut };
